@@ -6,4 +6,9 @@ public class Status {
         DELETE
     }
 
+    public enum Order {
+        ORDERED,
+        CANCEL
+    }
+
 }

@@ -1,16 +1,19 @@
 package com.camp.mini.domain;
 
-import com.camp.mini.dto.ProductDto;
 import com.camp.mini.enums.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,25 +22,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Product {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY) // 과제 조건이 주문시 상품은 1개만 선택임
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    private Integer price;
-    private Integer stock;
+    private Integer orderPrice;
 
+    private Integer quantity;
+    
     @Enumerated(EnumType.STRING)
-    private Status.Product status;
+    private Status.Order status;
 
     @Column(nullable = false)
     private LocalDateTime createDate;
@@ -47,10 +53,7 @@ public class Product {
 
     @PrePersist
     public void prePersist() {
-        if (this.stock == null) {
-            this.stock = 0;
-        }
-        this.status = Status.Product.ACTIVE;
+        this.status = Status.Order.ORDERED;
         this.createDate = LocalDateTime.now();
         this.updateDate = LocalDateTime.now();
     }
@@ -60,16 +63,7 @@ public class Product {
         this.updateDate = LocalDateTime.now();
     }
 
-    public void update(ProductDto.Update update) {
-        if (update.getName() != null) {
-            this.name = update.getName();
-        }
-        if (update.getPrice() != null) {
-            this.price = update.getPrice();
-        }
-    }
-
-    public void delete() {
-        this.status = Status.Product.DELETE;
+    public void cancel() {
+        this.status = Status.Order.CANCEL;
     }
 }

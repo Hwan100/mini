@@ -1,7 +1,6 @@
 package com.camp.mini.dto;
 
 import com.camp.mini.domain.Product;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,14 +16,14 @@ public class ProductDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Create{
+    public static class Create {
 
         @NotBlank(message = "이름은 필수입니다.")
         private String name;
         private Integer price;
         private Integer stock;
 
-        public Product toEntity(){
+        public Product toEntity() {
             return Product.builder()
                     .name(this.name)
                     .price(this.price)
@@ -38,7 +37,7 @@ public class ProductDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class Response{
+    public static class Response {
         private Long id;
         private String name;
         private Integer price;
@@ -46,7 +45,7 @@ public class ProductDto {
         private LocalDateTime createDate;
         private LocalDateTime updateDate;
 
-        public static Response toDto(Product product){
+        public static Response toDto(Product product) {
             return Response.builder()
                     .id(product.getId())
                     .name(product.getName())
@@ -62,7 +61,7 @@ public class ProductDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Update{
+    public static class Update {
         private String name;
         private Integer price;
     }
