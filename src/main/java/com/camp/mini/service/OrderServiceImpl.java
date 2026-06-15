@@ -5,10 +5,12 @@ import com.camp.mini.domain.Product;
 import com.camp.mini.dto.OrderDto;
 import com.camp.mini.dto.OrderDto.Create;
 import com.camp.mini.dto.OrderDto.Response;
-import com.camp.mini.repository.OrderRespository;
+import com.camp.mini.repository.OrderRepository;
 import com.camp.mini.repository.ProductRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService {
 
     private final ProductRepository productRepository;
-    private final OrderRespository orderRespository;
+    private final OrderRepository orderRepository;
 
     @Override
     public Long createOrder(Create createDto) {
 
-        Product product = productRepository.findById(createDto.getProductId())
+        Product product = productRepository.findByIdWithLock(createDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("상품이 없습니다."));
 
         if (product.getStock() < createDto.getQuantity()) {
@@ -40,23 +42,26 @@ public class OrderServiceImpl implements OrderService {
                 product.getStock() - createDto.getQuantity()
         );
 
-        orderRespository.save(order);
+        orderRepository.save(order);
 
         return order.getId();
     }
 
     @Override
     public Response getOrder(Long id) {
-        Order order = orderRespository.findById(id)
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("주문이 없습니다."));
 
         return OrderDto.Response.toDto(order);
     }
 
     @Override
-    public List<Response> getOrders() {
-        //내일 여기 페이지네이션하셈, n+1 안되게
+    public Page<Response> getOrders(int page, int size) {
 
-        return List.of();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = orderRepository.findAll(pageable);
+
+        return orders.map(OrderDto.Response::toDto);
+
     }
 }

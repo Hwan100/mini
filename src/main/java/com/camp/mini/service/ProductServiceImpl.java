@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
     @Override
-    public Long createProduct(ProductDto.Create createDto){
+    public Long createProduct(ProductDto.Create createDto) {
         Product product = createDto.toEntity();
         productRepository.save(product);
 
@@ -36,7 +36,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public List<Response> getProducts() {
-        List<Product> products = productRepository.findByStatus(Status.Product.ACTIVE);
+        List<Product> products = productRepository.findByStatus(Status.Product.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("상품목록이 없습니다."));
 
         return products.stream()
                 .map(ProductDto.Response::toDto)
@@ -46,7 +47,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public void updateProduct(Long id, Update update) {
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("상품이 없습니다."));
+                .orElseThrow(() -> new RuntimeException("상품이 없습니다."));
 
         product.update(update);
     }

@@ -3,14 +3,15 @@ package com.camp.mini.controller;
 import com.camp.mini.dto.OrderDto;
 import com.camp.mini.service.OrderService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,8 +37,9 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDto.Response>> getOrders() {
-        List<OrderDto.Response> orders = orderService.getOrders();
+    public ResponseEntity<Page<OrderDto.Response>> getOrders(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "3") int size) {
+        Page<OrderDto.Response> orders = orderService.getOrders(page, size);
         return ResponseEntity.ok(orders);
     }
 }
