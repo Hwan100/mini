@@ -7,6 +7,7 @@ import com.camp.mini.dto.OrderDto.Create;
 import com.camp.mini.dto.OrderDto.Response;
 import com.camp.mini.repository.OrderRespository;
 import com.camp.mini.repository.ProductRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +51,12 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("주문이 없습니다."));
 
         return OrderDto.Response.toDto(order);
+    }
+
+    @Override
+    public List<Response> getOrders() {
+        //내일 여기 페이지네이션하셈, n+1 안되게
+
+        return List.of();
     }
 }
